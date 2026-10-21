@@ -7,3 +7,5 @@ class LogEntry {
         this.command = command;
     }
 }
+
+module.exports = LogEntry;
