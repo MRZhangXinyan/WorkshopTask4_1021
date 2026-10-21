@@ -1,38 +1,24 @@
+"use strict";
 const Node = require("../node");
+const Cluster = require("../cluster");
+const Network = require("../network");
+const Simulator = require("../simulator");
 
-const LogEntry =require("../logEntry");
-
-console.log("\n====================");
-
-console.log("LOG RECOVERY");
-
-console.log("====================");
-
-const leader = new Node("Leader");
-
-leader.role = "LEADER";
-
-leader.log.push(new LogEntry(1, 1, "A"));
-leader.log.push(new LogEntry(2, 1, "B"));
-leader.log.push(new LogEntry(3, 1, "C"));
-leader.log.push(new LogEntry(4, 1, "D"));
-leader.log.push(new LogEntry(5, 1, "E"));
-
-const follower = new Node("Follower");
-
-follower.log.push(new LogEntry(1, 1, "A"));
-follower.log.push(new LogEntry(2, 1, "B"));
-follower.log.push(new LogEntry(3, 1, "C"));
-
-console.log("\nLeader Log Length:",leader.log.length);
-console.log("Follower Log Length:",follower.log.length);
-console.log("\nRecovering Missing Entries...");
-
-for (let i = follower.log.length; i < leader.log.length;i++) {
-    follower.log.push(leader.log[i]);
-    console.log(`Recovered Entry ${leader.log[i].index}`);
-}
-
-console.log("\nFollower Log Length:", follower.log.length);
-console.log("\nLESSON:");
-console.log("Recovered followers repair history from the leader.");
+const [leader, follower, other] = ["A", "B", "C"].map(id => new Node(id));
+const simulator = new Simulator(new Cluster([leader, follower, other]), new Network());
+console.log("\n=== PART 8: LOG RECOVERY ===");
+simulator.electLeader(leader);
+simulator.replicate("A");
+simulator.replicate("B");
+follower.fail();
+simulator.replicate("C");
+simulator.replicate("D");
+simulator.replicate("E");
+console.log("Before recovery: leader=", leader.log.map(e => e.command));
+console.log("Before recovery: follower=", follower.log.map(e => e.command));
+follower.recover();
+simulator.syncFollower(leader, follower);
+simulator.heartbeat(leader);
+console.log("After recovery: follower=", follower.log.map(e => e.command));
+console.log("Logs identical:", JSON.stringify(leader.log) === JSON.stringify(follower.log));
+console.log("Commit indices:", leader.commitIndex, follower.commitIndex);

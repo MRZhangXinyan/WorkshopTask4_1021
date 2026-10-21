@@ -1,7 +1,7 @@
 {
   "name": "raft-lab",
-  "version": "1.0.0",
-  "description": "Raft Distributed Consensus Simulation",
+  "version": "1.1.0",
+  "description": "Educational Raft scenarios with quorum-aware replication and workshop hardening",
   "main": "scenarios/leader_election.js",
   "scripts": {
     "start": "node scenarios/leader_election.js",
@@ -13,20 +13,12 @@
     "majority-lost": "node scenarios/majority_lost.js",
     "partition": "node scenarios/network_partition.js",
     "recovery": "node scenarios/log_recovery.js",
-    "hardening": "node scenarios/hardening.js"
+    "hardening": "node scenarios/hardening.js",
+    "test": "node --test tests/*.test.js",
+    "all": "node scripts/run-all.js"
   },
-  "keywords": [
-    "Raft",
-    "consensus",
-    "distributed-systems",
-    "fault-tolerance",
-    "security",
-    "workshop",
-    "teaching"
-  ],
-  "engines": {
-    "node": ">=18"
-  },
-  "author": "Inah Omoronyia",
+  "keywords": ["Raft", "consensus", "distributed-systems", "fault-tolerance", "workshop"],
+  "engines": { "node": ">=18" },
+  "author": "Original workshop: Inah Omoronyia; educational modifications for Workshop 4",
   "license": "ISC"
 }
